@@ -1,0 +1,21 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+# Dependencies and generated output
+node_modules/
+dist/
+build/
+coverage/
+.next/
+.venv/
+__pycache__/
+*.py[cod]
+# Local tooling
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
