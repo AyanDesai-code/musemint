@@ -22,7 +22,7 @@ After upgrading the owner account to GitHub Pro (or explicitly approving public 
 - Require conversation resolution and linear history.
 - Apply to administrators as well.
 - Disallow force pushes and branch deletion.
-- Do not require status checks until real CI checks exist.
+- The `CI` workflow defines a `Repository checks` job. Require its exact reported check name only after a successful hosted run.
 
 At least one reviewer other than the PR author is needed for the approval policy. Ensure a collaborator is available before enabling it.
 
@@ -45,4 +45,4 @@ Equivalent REST request: `PUT /repos/AyanDesai-code/musemint/branches/main/prote
 }
 ```
 
-Verify the resulting policy using `GET /repos/AyanDesai-code/musemint/branches/main/protection`. When CI is added and has run, configure the exact successful check names and require the branch to be up to date before merging.
+Verify the resulting policy using `GET /repos/AyanDesai-code/musemint/branches/main/protection`. After the [CI workflow](../.github/workflows/ci.yml) has run successfully, configure the exact successful check names and require the branch to be up to date before merging.
