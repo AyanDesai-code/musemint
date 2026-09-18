@@ -37,7 +37,7 @@ Documentation / CI / artwork generation / wallet / minting / listings / other:
 - Browser / OS:
 - Wallet and version (if relevant; never include recovery details):
 - Network / chain (if relevant):
-- CI run URL (if relevant):
+- CI run URL and failing step / local check command (if relevant):
 
 ## Evidence
 

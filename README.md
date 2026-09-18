@@ -1,8 +1,20 @@
 # MuseMint — AI Art NFT Marketplace (MVP)
 
+[![CI](https://github.com/AyanDesai-code/musemint/actions/workflows/ci.yml/badge.svg)](https://github.com/AyanDesai-code/musemint/actions/workflows/ci.yml)
+
 MuseMint is a planned marketplace where creators can turn AI-generated artwork into NFTs and collectors can discover and purchase them.
 
 > **Status: planning / repository scaffold.** There is no runnable application, deployed marketplace, smart contract, or application test suite yet. Features below describe intended scope, not functionality available today.
+
+## Contents
+
+- [MVP scope](#mvp-scope)
+- [Getting started](#getting-started)
+- [Repository guide](#repository-guide)
+- [Continuous integration](#continuous-integration)
+- [Contributing and roadmap](#contributing-and-roadmap)
+- [Safety and security](#safety-and-security)
+- [License](#license)
 
 ## MVP scope
 
@@ -35,6 +47,7 @@ Start with a testnet and test wallets. Do not use real funds during MVP developm
 ```sh
 git clone https://github.com/AyanDesai-code/musemint.git
 cd musemint
+python3 -m unittest discover -s tests -v
 python3 scripts/check_docs.py
 git diff --check
 ```
@@ -48,6 +61,7 @@ There are no application dependencies to install, environment variables to confi
   ISSUE_TEMPLATE/       Bug reports and feature proposals
   workflows/ci.yml     Repository CI skeleton
 scripts/check_docs.py  Dependency-free documentation checks
+tests/                Documentation checker regression tests
 docs/repository-setup.md
 CONTRIBUTING.md
 README.md
@@ -61,12 +75,21 @@ README.md
 
 [CI workflow](.github/workflows/ci.yml) runs on pull requests, pushes to `main`, and manual dispatch. Its **Repository checks** job:
 
-1. Checks tracked Markdown files for empty content, a missing final newline, trailing whitespace, and broken relative file links.
-2. Checks the latest commit for Git whitespace errors.
+1. Runs the documentation checker regression tests with Python’s standard-library `unittest`.
+2. Checks tracked Markdown files for empty content, a missing final newline, trailing whitespace, and broken relative file links.
+3. Checks the latest commit for Git whitespace errors.
 
-Run `python3 scripts/check_docs.py` and `git diff --check` locally before opening a PR. The link check covers inline relative file links; it does not validate heading anchors, reference-style links, or external URLs. Use explicit paragraphs rather than trailing spaces for line breaks.
+Run all three check commands from [Getting started](#getting-started) locally before opening a PR. Stage new Markdown files with `git add <path>` first: the checker only inspects files tracked by Git. The link check covers inline relative file links; it does not validate heading anchors, reference-style links, or external URLs. Use explicit paragraphs rather than trailing spaces for line breaks.
 
 CI has read-only repository permissions, cancels superseded runs on the same branch/PR, and requires no project secrets or third-party Python packages. It does **not** build an app, test smart contracts, or provide a security audit. Add stack-specific lint, test, and build jobs when code exists. Only require status checks in branch protection after their actual check names have run successfully; see [repository administration](docs/repository-setup.md).
+
+### Troubleshooting checks
+
+- **Clone returns “Repository not found”:** confirm your GitHub account has access and authenticate using your usual Git/GitHub CLI setup. Never put access tokens in repository files or clone URLs shared in issues.
+- **`python3` is unavailable:** install Python 3.12; on Windows, use `py -3.12` in place of `python3` if using the Python launcher.
+- **Documentation check fails:** use the reported file and line to remove trailing whitespace, add a final newline, or correct a relative link. Link paths are relative to the Markdown file containing them and are case-sensitive in Linux CI.
+- **A new Markdown file is not checked:** stage it with Git and rerun the check.
+- **Hosted CI fails:** open the [Actions workflow](https://github.com/AyanDesai-code/musemint/actions/workflows/ci.yml), inspect the failing step, and reproduce its command locally from the repository root. Maintainers can use **Run workflow** for a manual check when Actions is enabled.
 
 ## Contributing and roadmap
 

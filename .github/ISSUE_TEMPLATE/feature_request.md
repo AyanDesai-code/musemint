@@ -11,6 +11,10 @@ assignees: ''
 - [ ] I searched existing issues for duplicates and related proposals.
 - [ ] I reviewed the MVP scope in README and removed sensitive information.
 
+## Affected area
+
+Documentation / CI / artwork generation / wallet / minting / listings / other:
+
 ## Problem / user need
 
 Who needs this and why? Explain the outcome, not only the implementation.
