@@ -10,6 +10,7 @@ assignees: ''
 
 - [ ] I searched existing issues for duplicates and related proposals.
 - [ ] I reviewed the MVP scope in README and removed sensitive information.
+- [ ] I identified whether this is an MVP requirement or a post-MVP enhancement.
 
 ## Affected area
 
@@ -18,6 +19,10 @@ Documentation / CI / artwork generation / wallet / minting / listings / other:
 ## Problem / user need
 
 Who needs this and why? Explain the outcome, not only the implementation.
+
+## Related work
+
+Link related issues or proposals. Note any prerequisite decisions; write "None known" if there are none.
 
 ## Proposed solution
 

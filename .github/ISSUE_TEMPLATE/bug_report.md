@@ -12,6 +12,7 @@ assignees: ''
 
 - [ ] I searched existing issues for duplicates.
 - [ ] I removed secrets, personal data, and sensitive wallet information.
+- [ ] This report does not disclose an exploitable vulnerability; those must be reported privately to the repository owner.
 
 ## Summary
 
@@ -26,6 +27,8 @@ Documentation / CI / artwork generation / wallet / minting / listings / other:
 1. Starting state or prerequisites:
 2. Action taken:
 3. Observed result:
+
+Include the smallest reproducible example or exact failing command when possible. For CI failures, link the run and identify the failed step rather than pasting an entire unsanitized log.
 
 ## Expected behavior
 

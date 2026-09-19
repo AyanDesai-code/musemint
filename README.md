@@ -18,6 +18,17 @@ MuseMint is a planned marketplace where creators can turn AI-generated artwork i
 
 ## MVP scope
 
+### Available today
+
+| Deliverable | Current state |
+| --- | --- |
+| Project documentation | Setup, contribution workflow, scope, and open decisions |
+| Repository CI | Documentation checker tests, Markdown checks, and Git whitespace checks |
+| Issue intake | Bug report and feature request templates; blank issues disabled |
+| Marketplace application | Not implemented; no deployment or supported wallet/network yet |
+
+### Planned user flows
+
 - Create or upload AI-generated artwork and preview it before minting.
 - Connect a wallet and mint artwork with associated metadata.
 - Browse artwork and view creator, provenance, ownership, and listing details.
@@ -77,9 +88,9 @@ README.md
 
 1. Runs the documentation checker regression tests with Python’s standard-library `unittest`.
 2. Checks tracked Markdown files for empty content, a missing final newline, trailing whitespace, and broken relative file links.
-3. Checks the latest commit for Git whitespace errors.
+3. Checks Git whitespace errors across the full PR diff or push diff. Manual runs, initial pushes, and pushes whose previous commit is unavailable check the latest commit instead.
 
-Run all three check commands from [Getting started](#getting-started) locally before opening a PR. Stage new Markdown files with `git add <path>` first: the checker only inspects files tracked by Git. The link check covers inline relative file links; it does not validate heading anchors, reference-style links, or external URLs. Use explicit paragraphs rather than trailing spaces for line breaks.
+Run all three check commands from [Getting started](#getting-started) locally before opening a PR. `git diff --check` checks unstaged edits; also use `git diff --cached --check` for staged edits and `git diff --check origin/main...HEAD` for committed PR changes (after `git fetch origin`). Stage new Markdown files with `git add <path>` first: the checker only inspects files tracked by Git. The link check covers inline relative file links; it does not validate heading anchors, reference-style links, or external URLs. Use explicit paragraphs rather than trailing spaces for line breaks.
 
 CI has read-only repository permissions, cancels superseded runs on the same branch/PR, and requires no project secrets or third-party Python packages. It does **not** build an app, test smart contracts, or provide a security audit. Add stack-specific lint, test, and build jobs when code exists. Only require status checks in branch protection after their actual check names have run successfully; see [repository administration](docs/repository-setup.md).
 
@@ -97,6 +108,10 @@ CI has read-only repository permissions, cancels superseded runs on the same bra
 2. Bootstrap the application and document reproducible local setup.
 3. Implement the artwork-to-testnet-mint flow, then discovery and marketplace transactions.
 4. Add automated tests, failure-path coverage, and security/policy review before any public launch.
+
+### Reporting bugs and proposing work
+
+Use the [bug report](https://github.com/AyanDesai-code/musemint/issues/new?template=bug_report.md) for reproducible documentation, CI, or implementation defects, and the [feature request](https://github.com/AyanDesai-code/musemint/issues/new?template=feature_request.md) for proposals and MVP tasks. Search existing issues first. Include reproduction steps and expected behavior for bugs, or scope, acceptance criteria, and a validation plan for features. Maintainers triage priority and dependencies; submitting a proposal does not make a technology choice an approved decision.
 
 Use short-lived branches and pull requests to `main`. Link the relevant issue, describe validation, and follow [CONTRIBUTING.md](CONTRIBUTING.md). This is a sequencing guide, not a delivery-date commitment.
 
