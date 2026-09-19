@@ -37,6 +37,7 @@ Include the smallest reproducible example or exact failing command when possible
 ## Environment
 
 - App version / commit:
+- Runtime and version (for example, Python 3.12 for repository checks):
 - Browser / OS:
 - Wallet and version (if relevant; never include recovery details):
 - Network / chain (if relevant):

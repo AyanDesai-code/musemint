@@ -23,7 +23,7 @@ MuseMint is a planned marketplace where creators can turn AI-generated artwork i
 | Deliverable | Current state |
 | --- | --- |
 | Project documentation | Setup, contribution workflow, scope, and open decisions |
-| Repository CI | Documentation checker tests, Markdown checks, and Git whitespace checks |
+| Repository CI | Python compilation, documentation checker tests, Markdown and whitespace checks |
 | Issue intake | Bug report and feature request templates; blank issues disabled |
 | Marketplace application | Not implemented; no deployment or supported wallet/network yet |
 
@@ -58,6 +58,7 @@ Start with a testnet and test wallets. Do not use real funds during MVP developm
 ```sh
 git clone https://github.com/AyanDesai-code/musemint.git
 cd musemint
+python3 -m compileall -q scripts tests
 python3 -m unittest discover -s tests -v
 python3 scripts/check_docs.py
 git diff --check
@@ -74,6 +75,7 @@ There are no application dependencies to install, environment variables to confi
 scripts/check_docs.py  Dependency-free documentation checks
 tests/                Documentation checker regression tests
 docs/repository-setup.md
+docs/ci.md            CI behavior and application build/test extension checklist
 docs/mvp-spec.md       Proposed MVP API, data model, and acceptance criteria
 CONTRIBUTING.md
 README.md
@@ -81,6 +83,7 @@ README.md
 
 - [MVP specification](docs/mvp-spec.md): proposed features, endpoints, six-table data model, NFT metadata, and acceptance criteria.
 - [Contributing](CONTRIBUTING.md): issue and pull request workflow.
+- [CI notes](docs/ci.md): check behavior, security, and the application build/test extension checklist.
 - [Repository administration](docs/repository-setup.md): settings and branch protection limitations.
 - [Report a bug](https://github.com/AyanDesai-code/musemint/issues/new?template=bug_report.md) or [propose a feature](https://github.com/AyanDesai-code/musemint/issues/new?template=feature_request.md).
 
@@ -88,13 +91,14 @@ README.md
 
 [CI workflow](.github/workflows/ci.yml) runs on pull requests, pushes to `main`, and manual dispatch. Its **Repository checks** job:
 
-1. Runs the documentation checker regression tests with Python’s standard-library `unittest`.
-2. Checks tracked Markdown files for empty content, a missing final newline, trailing whitespace, and broken relative file links.
-3. Checks Git whitespace errors across the full PR diff or push diff. Manual runs, initial pushes, and pushes whose previous commit is unavailable check the latest commit instead.
+1. Compiles repository Python tooling to check syntax (not an application build).
+2. Runs the documentation checker regression tests with Python’s standard-library `unittest`.
+3. Checks tracked Markdown files for empty content, a missing final newline, trailing whitespace, and broken relative file links.
+4. Checks Git whitespace errors across the full PR diff or push diff. Manual runs, initial pushes, and pushes whose previous commit is unavailable check the latest commit instead.
 
-Run all three check commands from [Getting started](#getting-started) locally before opening a PR. `git diff --check` checks unstaged edits; also use `git diff --cached --check` for staged edits and `git diff --check origin/main...HEAD` for committed PR changes (after `git fetch origin`). Stage new Markdown files with `git add <path>` first: the checker only inspects files tracked by Git. The link check covers inline relative file links; it does not validate heading anchors, reference-style links, or external URLs. Use explicit paragraphs rather than trailing spaces for line breaks.
+Run all four check commands from [Getting started](#getting-started) locally before opening a PR. `git diff --check` checks unstaged edits; also use `git diff --cached --check` for staged edits and `git diff --check origin/main...HEAD` for committed PR changes (after `git fetch origin`). Stage new Markdown files with `git add <path>` first: the checker only inspects files tracked by Git. The link check covers inline relative file links; it does not validate heading anchors, reference-style links, or external URLs. Use explicit paragraphs rather than trailing spaces for line breaks.
 
-CI has read-only repository permissions, cancels superseded runs on the same branch/PR, and requires no project secrets or third-party Python packages. It does **not** build an app, test smart contracts, or provide a security audit. Add stack-specific lint, test, and build jobs when code exists. Only require status checks in branch protection after their actual check names have run successfully; see [repository administration](docs/repository-setup.md).
+CI has read-only repository permissions, cancels superseded runs on the same branch/PR, and requires no project secrets or third-party Python packages. It does **not** build an app, test smart contracts, or provide a security audit. Add stack-specific lint, test, and build jobs when code exists using the [CI extension checklist](docs/ci.md#application-buildtest-extension-checklist). Only require status checks in branch protection after their actual check names have run successfully; see [repository administration](docs/repository-setup.md).
 
 ### Troubleshooting checks
 
