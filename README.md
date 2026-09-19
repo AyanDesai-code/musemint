@@ -74,10 +74,12 @@ There are no application dependencies to install, environment variables to confi
 scripts/check_docs.py  Dependency-free documentation checks
 tests/                Documentation checker regression tests
 docs/repository-setup.md
+docs/mvp-spec.md       Proposed MVP API, data model, and acceptance criteria
 CONTRIBUTING.md
 README.md
 ```
 
+- [MVP specification](docs/mvp-spec.md): proposed features, endpoints, six-table data model, NFT metadata, and acceptance criteria.
 - [Contributing](CONTRIBUTING.md): issue and pull request workflow.
 - [Repository administration](docs/repository-setup.md): settings and branch protection limitations.
 - [Report a bug](https://github.com/AyanDesai-code/musemint/issues/new?template=bug_report.md) or [propose a feature](https://github.com/AyanDesai-code/musemint/issues/new?template=feature_request.md).
