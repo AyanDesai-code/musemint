@@ -2,18 +2,21 @@
 
 ## Current contract
 
-The [CI workflow](../.github/workflows/ci.yml) runs on every pull request, pushes to `main`, and manual dispatch. The single job is named **Repository checks** and uses Ubuntu with Python 3.12. Run its tooling checks locally from the repository root:
+The [CI workflow](../.github/workflows/ci.yml) runs on every pull request, pushes to `main`, and manual dispatch. The **Repository checks** job uses Ubuntu with Python 3.12. A separate **Local services smoke** job validates the Docker Compose development stack. Run its tooling checks locally from the repository root:
 
 ```sh
-python3 -m compileall -q scripts tests
-python3 -m unittest discover -s tests -v
-python3 scripts/check_docs.py
-git diff --check
+python3 scripts/dev.py check
 ```
 
-Compilation checks Python syntax; it is not an application build or a distributable artifact. Unit tests cover the documentation checker, not marketplace functionality. There is currently no application package manifest, dependency lockfile, smart contract, deployment, or application build command. Do not add a successful no-op job that claims to build or test the application.
+Compilation checks Python syntax; it is not an application build or a distributable artifact. Unit tests cover the documentation checker and dev runner (safe setup, failure propagation, RPC validation/retries, non-destructive shutdown), not marketplace functionality. There is currently no application package manifest, dependency lockfile, smart contract, deployment, or application build command. Do not add a successful no-op job that claims to build or test the application.
 
 The Markdown checker uses only the Python standard library and inspects Git-tracked Markdown, including issue templates. Stage new documents before running it. It checks nonempty content, final newlines, trailing whitespace, and simple inline relative file links. It does not validate remote URLs, heading anchors, reference links, or full Markdown syntax.
+
+## Local services smoke
+
+The job creates `.env` from public disposable defaults, checks Compose configuration, and runs `python3 scripts/dev.py up`. PostgreSQL must become healthy within 90 seconds; a temporary SQL table/insert/select validates read/write, and an HTTP JSON-RPC request must return chain ID 31337 (up to 30 attempts with two-second request timeouts). Any failure fails CI. Cleanup runs even on failure; DB volumes last only until the hosted runner is disposed. No deploys, migrations, real wallets, provider tokens, or external RPCs are used. Docker image pulls require Docker Hub/GHCR access.
+
+Images use explicit release tags, not `latest`; tags are not immutable digests. Review and ideally record verified multi-platform digests when updating images. Keep application jobs separate: tooling compilation and service probes are not application builds/tests. The future build/test integration checklist below remains applicable to Tasks 225, 229, and 232.
 
 ## Diff checks
 
@@ -31,7 +34,7 @@ Checkout fetches full history for these comparisons. Locally, use `git diff --ca
 - Actions are pinned to full commit SHAs with release comments. Review and update both together when upgrading.
 - No project secrets, wallets, RPC endpoints, or external AI services are needed for repository checks.
 - Keep checks on `pull_request`; do not switch to `pull_request_target` to execute untrusted PR code with privileged credentials.
-- Superseded runs for the same PR/ref are cancelled; the job has a five-minute timeout.
+- Superseded runs for the same PR/ref are cancelled; repository checks have a five-minute timeout and service smoke has ten minutes.
 - There are no deployment steps, caches, or artifact uploads in this scaffold.
 
 If no run appears, a maintainer should check repository Actions settings and any fork-run approval requirement. If a run fails, inspect the failed step and reproduce its command using Python 3.12. Do not post unsanitized logs in an issue.

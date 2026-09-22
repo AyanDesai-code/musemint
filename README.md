@@ -53,25 +53,48 @@ Start with a testnet and test wallets. Do not use real funds during MVP developm
 ### Prerequisites
 
 - Git and access to this private repository through an authorized GitHub account.
-- Python 3.12 for the dependency-free repository checks (the CI version).
+- Python 3.12 for the dependency-free repository tooling (the CI version).
+- For local services: Docker Engine/Desktop with Compose v2.20+ and a running daemon.
+- Ports 5432 and 8545 available on localhost. Docker is not needed for tooling checks.
 
 ```sh
 git clone https://github.com/AyanDesai-code/musemint.git
 cd musemint
-python3 -m compileall -q scripts tests
-python3 -m unittest discover -s tests -v
-python3 scripts/check_docs.py
-git diff --check
+python3 scripts/dev.py check
+# Optional local DB + EVM (no application server exists yet):
+python3 scripts/dev.py setup
+python3 scripts/dev.py doctor
+python3 scripts/dev.py up
+python3 scripts/dev.py status
+python3 scripts/dev.py down
 ```
 
-There are no application dependencies to install, environment variables to configure, or app build/run/test commands yet. Once a stack is selected, document its prerequisites, setup, `.env.example` placeholders, and exact commands here alongside its implementation. Do not add real credentials to examples.
+`up` starts PostgreSQL 16.10 and Anvil v1.3.1, waits for readiness, then checks SQL read/write and EVM chain ID 31337. `down` preserves database data; the chain is ephemeral. These local infrastructure choices do not select the production network or replace Task 225's Hardhat project. There are still no application dependencies, migrations, contract packages, or application build/run commands. `dev.py build` compiles Python tooling only; `dev.py test` runs its regression tests.
+
+### Environment variables and secrets
+
+`setup` copies [.env.example](.env.example) to ignored `.env` without overwriting an existing file. Current tooling checks need no configuration or secrets. Compose reads `.env` explicitly; shell variables override its values.
+
+| Variable | Local value / purpose | Consumer |
+| --- | --- | --- |
+| `POSTGRES_PASSWORD` | `musemint_local_only` — public disposable password, never for shared/production DBs | Compose DB initialization |
+| `DATABASE_URL` | `postgresql://musemint:musemint_local_only@127.0.0.1:5432/musemint` | Reserved for future host backend/ORM; not consumed yet |
+| `RPC_URL` | `http://127.0.0.1:8545` | Reserved for future host backend/contracts; smoke check uses this fixed local address |
+| `CHAIN_ID` | `31337` | Reserved for future apps; local chain and smoke check enforce 31337 |
+
+The local stack fixes DB name/user to `musemint` and ports to 5432/8545. If changing the password, also update the future `DATABASE_URL` (URL-encode special characters). PostgreSQL initialization variables only apply to an empty volume. See [local development](docs/local-development.md) for service lifecycle, troubleshooting, and safe reset guidance.
+
+No IPFS provider, public RPC, JWT signing, deployer, or error-tracking secrets are required yet. Add their exact names with the implementing packages; never invent working credentials. Keep backend tokens in ignored local files or deployment secret stores, never browser environment variables. Future live integration/deployment workflows must use protected GitHub environments, not PR secrets. Anvil accounts are publicly known test accounts: never fund them on public chains or import a real wallet.
 
 ## Repository guide
 
 ```text
 .github/
   ISSUE_TEMPLATE/       Bug reports and feature proposals
-  workflows/ci.yml     Repository CI skeleton
+  workflows/ci.yml     Tooling checks and local-service smoke CI
+scripts/dev.py         Shared setup/build/test/service commands
+compose.yaml           Loopback-only PostgreSQL and local EVM
+.env.example           Disposable local configuration
 scripts/check_docs.py  Dependency-free documentation checks
 tests/                Documentation checker regression tests
 docs/repository-setup.md
@@ -92,11 +115,11 @@ README.md
 [CI workflow](.github/workflows/ci.yml) runs on pull requests, pushes to `main`, and manual dispatch. Its **Repository checks** job:
 
 1. Compiles repository Python tooling to check syntax (not an application build).
-2. Runs the documentation checker regression tests with Python’s standard-library `unittest`.
+2. Runs the repository tooling regression tests with Python’s standard-library `unittest`.
 3. Checks tracked Markdown files for empty content, a missing final newline, trailing whitespace, and broken relative file links.
 4. Checks Git whitespace errors across the full PR diff or push diff. Manual runs, initial pushes, and pushes whose previous commit is unavailable check the latest commit instead.
 
-Run all four check commands from [Getting started](#getting-started) locally before opening a PR. `git diff --check` checks unstaged edits; also use `git diff --cached --check` for staged edits and `git diff --check origin/main...HEAD` for committed PR changes (after `git fetch origin`). Stage new Markdown files with `git add <path>` first: the checker only inspects files tracked by Git. The link check covers inline relative file links; it does not validate heading anchors, reference-style links, or external URLs. Use explicit paragraphs rather than trailing spaces for line breaks.
+Run `python3 scripts/dev.py check` locally before opening a PR. The separate **Local services smoke** job starts the same Compose stack and verifies SQL read/write and chain ID without external secrets. `git diff --check` checks unstaged edits; also use `git diff --cached --check` for staged edits and `git diff --check origin/main...HEAD` for committed PR changes (after `git fetch origin`). Stage new Markdown files with `git add <path>` first: the checker only inspects files tracked by Git. The link check covers inline relative file links; it does not validate heading anchors, reference-style links, or external URLs. Use explicit paragraphs rather than trailing spaces for line breaks.
 
 CI has read-only repository permissions, cancels superseded runs on the same branch/PR, and requires no project secrets or third-party Python packages. It does **not** build an app, test smart contracts, or provide a security audit. Add stack-specific lint, test, and build jobs when code exists using the [CI extension checklist](docs/ci.md#application-buildtest-extension-checklist). Only require status checks in branch protection after their actual check names have run successfully; see [repository administration](docs/repository-setup.md).
 
