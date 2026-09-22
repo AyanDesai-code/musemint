@@ -10,6 +10,7 @@ MuseMint is a planned marketplace where creators can turn AI-generated artwork i
 
 - [MVP scope](#mvp-scope)
 - [Getting started](#getting-started)
+- [Environment variables and secrets](#environment-variables-and-secrets)
 - [Repository guide](#repository-guide)
 - [Continuous integration](#continuous-integration)
 - [Contributing and roadmap](#contributing-and-roadmap)
@@ -71,6 +72,8 @@ python3 scripts/dev.py down
 
 `up` starts PostgreSQL 16.10 and Anvil v1.3.1, waits for readiness, then checks SQL read/write and EVM chain ID 31337. `down` preserves database data; the chain is ephemeral. These local infrastructure choices do not select the production network or replace Task 225's Hardhat project. There are still no application dependencies, migrations, contract packages, or application build/run commands. `dev.py build` compiles Python tooling only; `dev.py test` runs its regression tests.
 
+For the complete first-run walkthrough, configuration precedence, expected results, and troubleshooting, see the [local development guide](docs/local-development.md).
+
 ### Environment variables and secrets
 
 `setup` copies [.env.example](.env.example) to ignored `.env` without overwriting an existing file. Current tooling checks need no configuration or secrets. Compose reads `.env` explicitly; shell variables override its values.
@@ -98,6 +101,7 @@ compose.yaml           Loopback-only PostgreSQL and local EVM
 scripts/check_docs.py  Dependency-free documentation checks
 tests/                Documentation checker regression tests
 docs/repository-setup.md
+docs/local-development.md  First-run setup, environment reference, service lifecycle
 docs/ci.md            CI behavior and application build/test extension checklist
 docs/mvp-spec.md       Proposed MVP API, data model, and acceptance criteria
 CONTRIBUTING.md
@@ -106,6 +110,7 @@ README.md
 
 - [MVP specification](docs/mvp-spec.md): proposed features, endpoints, six-table data model, NFT metadata, and acceptance criteria.
 - [Contributing](CONTRIBUTING.md): issue and pull request workflow.
+- [Local development](docs/local-development.md): verified configuration consumers, setup commands, and troubleshooting.
 - [CI notes](docs/ci.md): check behavior, security, and the application build/test extension checklist.
 - [Repository administration](docs/repository-setup.md): settings and branch protection limitations.
 - [Report a bug](https://github.com/AyanDesai-code/musemint/issues/new?template=bug_report.md) or [propose a feature](https://github.com/AyanDesai-code/musemint/issues/new?template=feature_request.md).
